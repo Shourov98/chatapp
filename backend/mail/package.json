@@ -20,7 +20,7 @@
     "@types/nodemailer": "^6.4.17",
     "amqplib": "^0.10.8",
     "concurrently": "^9.2.0",
-    "dotnet": "^1.1.4",
+    "dotenv": "^16.3.1",
     "express": "^5.1.0",
     "nodemailer": "^7.0.5"
   },

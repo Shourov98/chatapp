@@ -8,10 +8,10 @@ export const startSendOtpConsumer = async () => {
     try {
         const connection = await amqp.connect({
             protocol: "amqp",
-            hostname: process.env.RABBITMQ_HOST,
+            hostname: process.env.RABBITMQ_DEFAULT_HOST,
             port: 5672,
-            username: process.env.RABBITMQ_USERNAME,
-            password: process.env.RABBITMQ_PASSWORD,
+            username: process.env.RABBITMQ_DEFAULT_USER,
+            password: process.env.RABBITMQ_DEFAULT_PASS,
         });
 
         const channel = await connection.createChannel();
@@ -25,7 +25,18 @@ export const startSendOtpConsumer = async () => {
         channel.consume(queueName, async(msg) => {
             if(msg) {
                 try {
-                    const {to, subject, body} = JSON.parse(msg.toString())
+                    // Parse the message content - handle both string and buffer
+                    let messageContent;
+                    try {
+                        messageContent = JSON.parse(msg.content.toString());
+                    } catch (parseError) {
+                        console.log("❌ Failed to parse message content", parseError);
+                        console.log("Message content:", msg.content.toString());
+                        channel.nack(msg);
+                        return;
+                    }
+                    
+                    const {to, subject, body} = messageContent
 
                     const transporter = nodemailer.createTransport({
                         host: "smtp.gmail.com",
