@@ -112,3 +112,31 @@ export const updateName = TryCatch(async(req: AuthencaticatedRequest, res)=> {
         token,
     })
 })
+
+export const getAllUser = TryCatch(async(req: AuthencaticatedRequest, res)=> {
+    const users = await User.find();
+
+    res.json(users);
+});
+
+export const getAUser = TryCatch(async(req, res) => {
+    const user = await User.findById(req.params.id);
+
+    res.json(user);
+})
+
+export const logoutUser = TryCatch(async(req: AuthencaticatedRequest, res) => {
+    const user = req.user;
+
+    if(!user) {
+        res.status(404).json({
+            message: "Please Login first",
+        });
+        return;
+    }
+    await redisClient.del(`user:${user._id}`);
+
+    res.json({
+        message: "User logged out successfully",
+    })
+})
