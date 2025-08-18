@@ -1,4 +1,3 @@
-import { User } from './../../../user/src/model/User';
 import mongoose, { Document, Schema} from "mongoose";
 
 export interface IChat extends Document {
